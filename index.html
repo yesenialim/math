@@ -21,6 +21,7 @@
             font-size: 48px;
             font-weight: bold;
             margin-bottom: 20px;
+            min-height: 60px;
         }
         .btn {
             font-size: 32px;
@@ -35,10 +36,15 @@
         .btn:hover {
             background-color: #45a049;
         }
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
         #message {
             font-size: 36px;
             margin-top: 20px;
             min-height: 50px;
+            color: #2e8b57;
         }
         .language-selector {
             margin: 20px 0;
@@ -68,6 +74,10 @@
             flex-wrap: wrap;
             gap: 15px;
             margin-top: 20px;
+        }
+        .correct-answer {
+            color: #2e8b57;
+            font-weight: bold;
         }
         @media (max-width: 600px) {
             .number-buttons {
@@ -116,7 +126,7 @@
         <p id="message"></p>
         
         <div class="action-buttons">
-            <button class="btn" onclick="nextQuestion()" id="next-btn">Next Question</button>
+            <button class="btn" onclick="nextQuestion()" id="next-btn" disabled>Next Question</button>
             <button class="btn" onclick="speakQuestion()" id="speak-btn">🔊 Read Question</button>
         </div>
     </div>
@@ -124,6 +134,7 @@
     <script>
         let num1, num2, correctAnswer;
         let currentLang = "en"; // Default to English
+        let answered = false;
 
         const translations = {
             en: { 
@@ -188,19 +199,37 @@
             num1 = Math.floor(Math.random() * 5) + 1;
             num2 = Math.floor(Math.random() * 5) + 1;
             correctAnswer = num1 + num2;
-            document.getElementById("question").innerText = num1 + " + " + num2 + " = ?";
+            document.getElementById("question").innerHTML = 
+                `${num1} + ${num2} = <span class="question-mark">?</span>`;
             document.getElementById("message").innerText = "";
+            document.getElementById("next-btn").disabled = true;
+            answered = false;
+            
+            // Remove correct answer highlight if any
+            const questionMark = document.querySelector(".question-mark");
+            if (questionMark) {
+                questionMark.classList.remove("correct-answer");
+            }
         }
 
         function checkAnswer(answer) {
+            if (answered) return;
+            
             if (answer === correctAnswer) {
+                // Show correct answer in place of the question mark
+                document.querySelector(".question-mark").textContent = correctAnswer;
+                document.querySelector(".question-mark").classList.add("correct-answer");
+                
                 document.getElementById("message").innerText = translations[currentLang].correct;
+                document.getElementById("next-btn").disabled = false;
+                answered = true;
             } else {
                 document.getElementById("message").innerText = translations[currentLang].wrong;
             }
         }
 
         function nextQuestion() {
+            if (!answered) return;
             generateQuestion();
         }
 
@@ -228,8 +257,6 @@
                 const tamilVoice = voices.find(voice => voice.lang === "ta-IN");
                 if (tamilVoice) {
                     speech.voice = tamilVoice;
-                } else {
-                    console.log("Tamil voice not found, using default");
                 }
             }
             
@@ -273,19 +300,18 @@
         generateQuestion();
         
         // Load voices when they become available
-        let voicesLoaded = false;
         speechSynthesis.onvoiceschanged = function() {
-            voicesLoaded = true;
+            // Voices loaded
         };
         
         // On mobile devices, we need to handle speech synthesis differently
         document.addEventListener('click', function() {
-            if (!voicesLoaded) {
-                const voices = window.speechSynthesis.getVoices();
-                if (voices.length > 0) {
-                    voicesLoaded = true;
-                }
-            }
+            // This helps with mobile speech synthesis
+        }, false);
+    </script>
+
+</body>
+</html>
         }, false);
     </script>
 
