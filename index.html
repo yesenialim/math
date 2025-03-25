@@ -9,9 +9,13 @@
             text-align: center;
             font-family: Arial, sans-serif;
             background-color: #f7f7f7;
+            padding: 20px;
         }
         .container {
-            margin-top: 50px;
+            margin-top: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
         #question {
             font-size: 48px;
@@ -34,6 +38,48 @@
         #message {
             font-size: 36px;
             margin-top: 20px;
+            min-height: 50px;
+        }
+        .language-selector {
+            margin: 20px 0;
+            font-size: 28px;
+        }
+        #language {
+            font-size: 28px;
+            padding: 10px;
+            border-radius: 10px;
+            min-width: 300px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .number-buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        @media (max-width: 600px) {
+            .number-buttons {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .btn {
+                font-size: 28px;
+                padding: 12px 20px;
+            }
+            #question {
+                font-size: 40px;
+            }
         }
     </style>
 </head>
@@ -42,31 +88,37 @@
     <div class="container">
         <h1 id="game-title">Simple Math Game</h1>
         
-        <label for="language">🌍 Select Language:</label>
-        <select id="language" onchange="changeLanguage()">
-            <option value="en">English</option>
-            <option value="zh">中文 (Chinese)</option>
-            <option value="ms">Bahasa Melayu (Malay)</option>
-            <option value="ta">தமிழ் (Tamil)</option>
-        </select>
+        <div class="language-selector">
+            <label for="language" id="language-label">🌍 Select Language:</label>
+            <select id="language" onchange="changeLanguage()">
+                <option value="en">English</option>
+                <option value="zh">中文 (Chinese)</option>
+                <option value="ms">Bahasa Melayu (Malay)</option>
+                <option value="ta">தமிழ் (Tamil)</option>
+            </select>
+        </div>
 
         <p id="question">Loading...</p>
 
-        <button class="btn" onclick="checkAnswer(0)">0</button>
-        <button class="btn" onclick="checkAnswer(1)">1</button>
-        <button class="btn" onclick="checkAnswer(2)">2</button>
-        <button class="btn" onclick="checkAnswer(3)">3</button>
-        <button class="btn" onclick="checkAnswer(4)">4</button>
-        <button class="btn" onclick="checkAnswer(5)">5</button>
-        <button class="btn" onclick="checkAnswer(6)">6</button>
-        <button class="btn" onclick="checkAnswer(7)">7</button>
-        <button class="btn" onclick="checkAnswer(8)">8</button>
-        <button class="btn" onclick="checkAnswer(9)">9</button>
+        <div class="number-buttons">
+            <button class="btn" onclick="checkAnswer(0)">0</button>
+            <button class="btn" onclick="checkAnswer(1)">1</button>
+            <button class="btn" onclick="checkAnswer(2)">2</button>
+            <button class="btn" onclick="checkAnswer(3)">3</button>
+            <button class="btn" onclick="checkAnswer(4)">4</button>
+            <button class="btn" onclick="checkAnswer(5)">5</button>
+            <button class="btn" onclick="checkAnswer(6)">6</button>
+            <button class="btn" onclick="checkAnswer(7)">7</button>
+            <button class="btn" onclick="checkAnswer(8)">8</button>
+            <button class="btn" onclick="checkAnswer(9)">9</button>
+        </div>
 
         <p id="message"></p>
         
-        <button class="btn" onclick="nextQuestion()">Next Question</button>
-        <button class="btn" onclick="speakQuestion()">🔊 Read Question</button>
+        <div class="action-buttons">
+            <button class="btn" onclick="nextQuestion()" id="next-btn">Next Question</button>
+            <button class="btn" onclick="speakQuestion()" id="speak-btn">🔊 Read Question</button>
+        </div>
     </div>
 
     <script>
@@ -74,10 +126,62 @@
         let currentLang = "en"; // Default to English
 
         const translations = {
-            en: { title: "Simple Math Game", next: "Next Question", correct: "🎉 Well done!", wrong: "❌ Try again!", read: "🔊 Read Question" },
-            zh: { title: "数学游戏", next: "下一题", correct: "🎉 做得好!", wrong: "❌ 再试一次!", read: "🔊 朗读问题" },
-            ms: { title: "Permainan Matematik Mudah", next: "Soalan Seterusnya", correct: "🎉 Bagus!", wrong: "❌ Cuba lagi!", read: "🔊 Bacakan Soalan" },
-            ta: { title: "எளிய கணிதம்", next: "அடுத்த கேள்வி", correct: "🎉 நல்ல வேலை!", wrong: "❌ மீண்டும் முயற்சி செய்!", read: "🔊 கேள்வி படி" }
+            en: { 
+                title: "Simple Math Game", 
+                next: "Next Question", 
+                correct: "🎉 Well done!", 
+                wrong: "❌ Try again!", 
+                read: "🔊 Read Question",
+                selectLanguage: "🌍 Select Language:",
+                options: [
+                    { value: "en", text: "English" },
+                    { value: "zh", text: "中文 (Chinese)" },
+                    { value: "ms", text: "Bahasa Melayu (Malay)" },
+                    { value: "ta", text: "தமிழ் (Tamil)" }
+                ]
+            },
+            zh: { 
+                title: "数学游戏", 
+                next: "下一题", 
+                correct: "🎉 做得好!", 
+                wrong: "❌ 再试一次!", 
+                read: "🔊 朗读问题",
+                selectLanguage: "🌍 选择语言:",
+                options: [
+                    { value: "en", text: "英语 (English)" },
+                    { value: "zh", text: "中文 (Chinese)" },
+                    { value: "ms", text: "马来语 (Malay)" },
+                    { value: "ta", text: "泰米尔语 (Tamil)" }
+                ]
+            },
+            ms: { 
+                title: "Permainan Matematik Mudah", 
+                next: "Soalan Seterusnya", 
+                correct: "🎉 Bagus!", 
+                wrong: "❌ Cuba lagi!", 
+                read: "🔊 Bacakan Soalan",
+                selectLanguage: "🌍 Pilih Bahasa:",
+                options: [
+                    { value: "en", text: "Inggeris (English)" },
+                    { value: "zh", text: "Cina (Chinese)" },
+                    { value: "ms", text: "Bahasa Melayu (Malay)" },
+                    { value: "ta", text: "Tamil (Tamil)" }
+                ]
+            },
+            ta: { 
+                title: "எளிய கணித விளையாட்டு", 
+                next: "அடுத்த கேள்வி", 
+                correct: "🎉 நல்லது!", 
+                wrong: "❌ மீண்டும் முயற்சிக்கவும்!", 
+                read: "🔊 கேள்வியைப் படி",
+                selectLanguage: "🌍 மொழியைத் தேர்ந்தெடு:",
+                options: [
+                    { value: "en", text: "ஆங்கிலம் (English)" },
+                    { value: "zh", text: "சீனம் (Chinese)" },
+                    { value: "ms", text: "மலாய் (Malay)" },
+                    { value: "ta", text: "தமிழ் (Tamil)" }
+                ]
+            }
         };
 
         function generateQuestion() {
@@ -107,13 +211,28 @@
             } else if (currentLang === "ms") {
                 text = num1 + " tambah " + num2 + " sama dengan berapa?";
             } else if (currentLang === "ta") {
-                text = num1 + " கூடும் " + num2 + " எவ்வளவு?";
+                text = num1 + " கூட்டல் " + num2 + " எத்தனை?";
             } else {
                 text = num1 + " plus " + num2 + " equals what?";
             }
 
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+            
             let speech = new SpeechSynthesisUtterance(text);
             speech.lang = getSpeechLangCode();
+            
+            // Set voice for Tamil if available
+            if (currentLang === "ta") {
+                const voices = window.speechSynthesis.getVoices();
+                const tamilVoice = voices.find(voice => voice.lang === "ta-IN");
+                if (tamilVoice) {
+                    speech.voice = tamilVoice;
+                } else {
+                    console.log("Tamil voice not found, using default");
+                }
+            }
+            
             window.speechSynthesis.speak(speech);
         }
 
@@ -121,8 +240,26 @@
             let selectedLang = document.getElementById("language").value;
             currentLang = selectedLang;
 
+            // Update all text elements
             document.getElementById("game-title").innerText = translations[selectedLang].title;
+            document.getElementById("next-btn").innerText = translations[selectedLang].next;
+            document.getElementById("speak-btn").innerText = translations[selectedLang].read;
+            document.getElementById("language-label").innerText = translations[selectedLang].selectLanguage;
             document.getElementById("message").innerText = "";
+            
+            // Update the language options
+            const languageSelect = document.getElementById("language");
+            languageSelect.innerHTML = "";
+            
+            translations[selectedLang].options.forEach(option => {
+                const optElement = document.createElement("option");
+                optElement.value = option.value;
+                optElement.text = option.text;
+                if (option.value === selectedLang) {
+                    optElement.selected = true;
+                }
+                languageSelect.appendChild(optElement);
+            });
         }
 
         function getSpeechLangCode() {
@@ -132,7 +269,24 @@
                    "en-US";
         }
 
-        generateQuestion(); 
+        // Initialize the game
+        generateQuestion();
+        
+        // Load voices when they become available
+        let voicesLoaded = false;
+        speechSynthesis.onvoiceschanged = function() {
+            voicesLoaded = true;
+        };
+        
+        // On mobile devices, we need to handle speech synthesis differently
+        document.addEventListener('click', function() {
+            if (!voicesLoaded) {
+                const voices = window.speechSynthesis.getVoices();
+                if (voices.length > 0) {
+                    voicesLoaded = true;
+                }
+            }
+        }, false);
     </script>
 
 </body>
