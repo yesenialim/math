@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Math Game</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        #question {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .btn {
+            font-size: 32px;
+            padding: 15px 30px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        #message {
+            font-size: 36px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 id="game-title">Simple Math Game</h1>
+        
+        <label for="language">🌍 Select Language:</label>
+        <select id="language" onchange="changeLanguage()">
+            <option value="en">English</option>
+            <option value="zh">中文 (Chinese)</option>
+            <option value="ms">Bahasa Melayu (Malay)</option>
+            <option value="ta">தமிழ் (Tamil)</option>
+        </select>
+
+        <p id="question">Loading...</p>
+
+        <button class="btn" onclick="checkAnswer(0)">0</button>
+        <button class="btn" onclick="checkAnswer(1)">1</button>
+        <button class="btn" onclick="checkAnswer(2)">2</button>
+        <button class="btn" onclick="checkAnswer(3)">3</button>
+        <button class="btn" onclick="checkAnswer(4)">4</button>
+        <button class="btn" onclick="checkAnswer(5)">5</button>
+        <button class="btn" onclick="checkAnswer(6)">6</button>
+        <button class="btn" onclick="checkAnswer(7)">7</button>
+        <button class="btn" onclick="checkAnswer(8)">8</button>
+        <button class="btn" onclick="checkAnswer(9)">9</button>
+
+        <p id="message"></p>
+        
+        <button class="btn" onclick="nextQuestion()">Next Question</button>
+        <button class="btn" onclick="speakQuestion()">🔊 Read Question</button>
+    </div>
+
+    <script>
+        let num1, num2, correctAnswer;
+        let currentLang = "en"; // Default to English
+
+        const translations = {
+            en: { title: "Simple Math Game", next: "Next Question", correct: "🎉 Well done!", wrong: "❌ Try again!", read: "🔊 Read Question" },
+            zh: { title: "数学游戏", next: "下一题", correct: "🎉 做得好!", wrong: "❌ 再试一次!", read: "🔊 朗读问题" },
+            ms: { title: "Permainan Matematik Mudah", next: "Soalan Seterusnya", correct: "🎉 Bagus!", wrong: "❌ Cuba lagi!", read: "🔊 Bacakan Soalan" },
+            ta: { title: "எளிய கணிதம்", next: "அடுத்த கேள்வி", correct: "🎉 நல்ல வேலை!", wrong: "❌ மீண்டும் முயற்சி செய்!", read: "🔊 கேள்வி படி" }
+        };
+
+        function generateQuestion() {
+            num1 = Math.floor(Math.random() * 5) + 1;
+            num2 = Math.floor(Math.random() * 5) + 1;
+            correctAnswer = num1 + num2;
+            document.getElementById("question").innerText = num1 + " + " + num2 + " = ?";
+            document.getElementById("message").innerText = "";
+        }
+
+        function checkAnswer(answer) {
+            if (answer === correctAnswer) {
+                document.getElementById("message").innerText = translations[currentLang].correct;
+            } else {
+                document.getElementById("message").innerText = translations[currentLang].wrong;
+            }
+        }
+
+        function nextQuestion() {
+            generateQuestion();
+        }
+
+        function speakQuestion() {
+            let text;
+            if (currentLang === "zh") {
+                text = num1 + " 加 " + num2 + " 是多少?";
+            } else if (currentLang === "ms") {
+                text = num1 + " tambah " + num2 + " sama dengan berapa?";
+            } else if (currentLang === "ta") {
+                text = num1 + " கூடும் " + num2 + " எவ்வளவு?";
+            } else {
+                text = num1 + " plus " + num2 + " equals what?";
+            }
+
+            let speech = new SpeechSynthesisUtterance(text);
+            speech.lang = getSpeechLangCode();
+            window.speechSynthesis.speak(speech);
+        }
+
+        function changeLanguage() {
+            let selectedLang = document.getElementById("language").value;
+            currentLang = selectedLang;
+
+            document.getElementById("game-title").innerText = translations[selectedLang].title;
+            document.getElementById("message").innerText = "";
+        }
+
+        function getSpeechLangCode() {
+            return currentLang === "zh" ? "zh-CN" :
+                   currentLang === "ms" ? "ms-MY" :
+                   currentLang === "ta" ? "ta-IN" :
+                   "en-US";
+        }
+
+        generateQuestion(); 
+    </script>
+
+</body>
+</html>
